@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>uploader.js</title>
+  <script src="dbg.js"></script>
+  <script src="uploader.js"></script>
+  <script>
+    var up = null;
+    window.addEventListener(
+        'load',
+        function( e ) {
+            var input = document.getElementById( 'file_input' );
+            up = new uploader( input );
+        },
+        false
+    );
+  </script>
+</head>
+<body>
+  <p>
+    <input type="file" id="file_input" multiple="multiple">
+  </p>
+</body>
+</html>
