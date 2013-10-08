@@ -1,6 +1,47 @@
 /*****************************************************************************
     Chunked, High-Volume File Uploader
 
+    Problem: Sending very large files over HTTP presents several challenges
+    (forgetting, for a moment, the fact that HTTP isn't designed for large
+    file transfers).  HTTP is most typically a server-to-client transaction.
+    Client-to-server transactions tend to be very small (just basic request
+    information, and the occasional form submission).  Even with modern
+    server infrastructure, accepting a one-time request that contains a
+    message more than 10 MB is extraordinary.  Scalability to a large number
+    of concurrent uploaders is a primary concern.  However, what if the
+    number of concurrent uploaders is extremely limited (e.g. in a
+    corporate environment)?  Now, we can attempt to upload massive files by
+    increasing the memory limits and security thresholds on the server.
+    However, this is not a very portable (or forward-thinking) solution.
+    The better option is to send large files to the server in parts.  That
+    way the basic server configuration (software and hardware) doesn't have
+    to change to handle very large files.
+
+    Solution: The immediate solution is to create a one-off HTTP client
+    capable of accepting a large file from the user, and making a series of
+    requests to the server; iteratively transferring the entire file.
+
+    However, this system attempts to explore a browser-based approach using
+    some of the new (HTML5-based) tools available in modern web browsers.
+    The goal is to not require any plugins (custom or ubiquitous), while
+    still providing strong upload feedback to the user.
+
+    The critical link to getting this to work entirely in JavaScript is the
+    new Blob/File and FileReader objects.  The capability to read parts of a
+    file from the user's file system (using the Blob.slice() method) gives us
+    everything we need to send files that are potentially larger than the
+    memory available to the web browser (not to mention, each web server
+    handler process).
+
+    Even better, Firefox gives us a relatively efficient mechanism of moving
+    binary data between a FileReader object and an XMLHttpRequest object via
+    the FileReader.readAsBinaryString() and XMLHttpRequest.sendAsBinary()
+    methods.
+    
+    Note: This implementation has not been tested on any browser other than
+    Firefox (version 24.0 as of the time of this comment).  I would like, at
+    a minimum, to also support webkit-based browsers.
+
     Note: This system requires server-side feature support.  The server must
     support a simple POST interface that allows files to be uploaded in parts
     and reassembled on the server's file system.  The protocol is as follows:
@@ -257,7 +298,7 @@ function upload( file, target ) {
             context.onprogress( {
                 lengthComputable: true,
                 loaded:           ( e.loaded + context.status.bytes_sent ),
-                total:            context.file.size
+                total:            context.status.bytes_total
             } );
         }
     };
