@@ -55,7 +55,7 @@ if( isset( $info[ 'time_ms' ] ) == false ) {
 }
 
 //destination directory needs to be provided by application
-$dir = 'uploader';
+$dir = 'files';
 
 //write the POST contents to the file
 $ifh = fopen( 'php://input', 'rb' );
