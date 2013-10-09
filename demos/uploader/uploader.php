@@ -73,6 +73,9 @@ while( feof( $ifh ) == false ) {
 fclose( $ofh );
 fclose( $ifh );
 
+//update the length field for verfication purposes
+$info[ 'length' ] = $size;
+
 //store the file meta data
 file_put_contents(
     $dir . '/' . $info[ 'name' ] . '.json',
