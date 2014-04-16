@@ -1,0 +1,39 @@
+{
+    "status"  : 0,
+    "message" : "message",
+    "payload" : {
+        "fields" : [
+            "id",
+            "cid",
+            "pid",
+            "name",
+            "color"
+        ],
+        "records" : [
+            [ 1, 2, "adam",    "Adam",    "red"   ],
+            [ 2, 2, "baker",   "Baker",   "green" ],
+            [ 3, 2, "charlie", "Charlie", "blue"  ]
+        ],
+        "info" : {
+            "meta" : {
+                "type_id"    : 3,
+                "type_name"  : "accountants",
+                "type_nouns" : [ "accountant" ]
+            },
+            "parent" : {
+                "type_id"    : 2,
+                "type_name"  : "employees",
+                "type_nouns" : [ "employee" ],
+                "id"         : 33,
+                "pid"        : "logistics",
+                "name"       : "Logistics"
+            },
+            "range" : {
+                "offset"  : 0,
+                "length"  : 3,
+                "total"   : 3,
+                "maximum" : 64
+            }
+        }
+    }
+}
