@@ -89,6 +89,14 @@ function ec( $key ) { global $conf; echo $conf[ $key ]; }
   <title>hzjs demos</title>
   <link rel="stylesheet" href="<?php ec('hzcss'); ?>/base_sans.css">
   <link rel="stylesheet" href="<?php ec('hzcss'); ?>/ui.css">
+  <style>
+    body {
+      margin: 0.5em 1em;
+    }
+      body>div {
+        margin: 0.5em 0;
+      }
+  </style>
 <?php echo $script_tags; ?>
   <script>
     window.addEventListener(
@@ -96,8 +104,7 @@ function ec( $key ) { global $conf; echo $conf[ $key ]; }
       function( event ) {
         if( 'main' in window ) {
           var hash = window.location.hash;
-          hash = hash.replace( /^#/, '' );
-          window.main( hash.split( ':' ) );
+          window.main( hash.replace( /^#/, '' ).split( ':' ) );
         }
       },
       false
