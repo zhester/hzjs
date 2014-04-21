@@ -12,7 +12,8 @@ function main( argv ) {
                     'Name'  : {},
                     'age'   : { 'label' : 'Age' },
                     'Color' : { 'help' : 'Enter your favorite color.' },
-                    'Notes' : { 'type' : 'edit' }
+                    'Notes' : { 'type' : 'edit' },
+                    'Shhhh' : { 'type' : 'hidden', 'value' : 42 }
                 },
                 function( data ) {
                     console.log( JSON.stringify( data ) );
