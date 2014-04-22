@@ -28,4 +28,14 @@ function main( argv ) {
         function( event ) { console.log( event.target.value ); }
     );
 
+    p = hz.util.append();
+
+    hz.ui.add.efile(
+        p,
+        function( event ) {
+            console.log( 'handling ' + event.target.files.length + ' files' );
+        },
+        true
+    );
+
 }
