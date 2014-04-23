@@ -10,12 +10,7 @@ function main( argv ) {
     var form = hz.form.create_form( handle_submit );
     form.setHiddenInput( 'hkey', 'hval' );
     form.appendChild( hz.form.create_field( 'Name' ) );
-    form.appendChild( hz.form.create_field( 'Address' ) );
-    form.appendChild( hz.form.create_field( 'Favorite Color' ) );
-    var btn = hz.ui.add.button(
-        form,
-        'Submit Button'
-    );
+    var btn = hz.ui.add.button( form, 'Submit Button' );
     btn.type = 'submit';
     p.appendChild( form );
 
@@ -36,7 +31,8 @@ function main( argv ) {
             'Meat' : {
                 'type' : 'select',
                 'args' : [ [ 'Beef', 'Pork', 'Insect' ] ]
-            }
+            },
+            'File' : { 'type' : 'efile' }
         },
         'Submit Label'
     );
