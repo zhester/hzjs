@@ -3,16 +3,19 @@ function main( argv ) {
 
     p = hz.util.append();
 
-    hz.ui.add.gauge( p, 'Gauge Text', 0.6 );
+    var c = hz.ui.create.gauge( 'Gauge Text', 0.6 );
+    p.appendChild( c );
 
-    hz.ui.add.pulse( p, 'Pulse Text' );
+    c = hz.ui.create.pulse( 'Pulse Text' );
+    p.appendChild( c );
 
-    var pnode = hz.ui.add.progress( p, 'Progress Text', 0.0, 1 );
+    c = hz.ui.create.progress( 'Progress Text', 0.0, 1 );
+    p.appendChild( c );
     var pcent = 0.0;
     window.setInterval(
         function( event ) {
             pcent = pcent > 1.0 ? 0.0 : pcent + 0.05;
-            pnode.hz.set_value( pcent );
+            c.hz.set_value( pcent );
         },
         1000
     );
