@@ -1,7 +1,7 @@
 
 function main( argv ) {
 
-    p = hz.util.append();
+    var p = hz.util.append();
 
     var ds = new hz.doc.structure(
         'h1,p,p:strong,null;div:div:div;;;',
