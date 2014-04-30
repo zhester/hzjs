@@ -17,6 +17,7 @@ function main( argv ) {
     for( var i = 0; i < buttons.length; ++i ) {
         button = hz.ui.add.button( p, buttons[ i ] );
         button.className = 'button ' + buttons[ i ];
+        button.title = buttons[ i ];
     }
 
     p = hz.util.append();
@@ -24,6 +25,7 @@ function main( argv ) {
     for( var i = 0; i < buttons.length; ++i ) {
         button = hz.ui.add.button( p, buttons[ i ] );
         button.className = 'button ' + buttons[ i ];
+        button.title = buttons[ i ];
         button.disabled = true;
     }
 
