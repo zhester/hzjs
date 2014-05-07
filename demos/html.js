@@ -1,7 +1,7 @@
 
 function main( argv ) {
 
-    var parent = hz.util.append();
+    var parent = document.body.append( '<div>' );
 
     var ds = new hz.doc.structure(
         'h1,p:a,a,a,a;p:img',
@@ -11,7 +11,7 @@ function main( argv ) {
         ]
     );
 
-    hz.util.append( parent, ds );
+    parent.append( ds.get_element() );
 
     var obj = {}
     ds.bind_object(
@@ -22,9 +22,11 @@ function main( argv ) {
     obj.a2.href = 'http://example.com/doc3.html';
     obj.im.src  = '../../hzphp/tools/icon.php?id=check_fill';
 
+    var p0 = document.body.append( '<div>' );
+
     //testing HTMLElement.getURLNodes() method
     var button = hz.ui.create.button(
-        'Iterate URLers',
+        'HTMLElement.getURLNodes()',
         function( event ) {
             var nodes = parent.getURLNodes();
             var n;
@@ -35,28 +37,13 @@ function main( argv ) {
             }
         }
     );
-    hz.util.append( null, button );
-
-    //
-    button = hz.ui.create.button(
-        'Prefix Relative URLs',
-        function( event ) {
-            var nodes = parent.getURLNodes();
-            var n;
-            for( var i = 0; i < nodes.length; ++i ) {
-                n = nodes[ i ];
-//ZIH
-                console.log( 'IMPLEMENT ME' );
-            }
-        }
-    );
-    hz.util.append( null, button );
+    p0.append( button );
 
     //testing textValue accessor property
-    var p1 = hz.util.append();
+    var p1 = document.body.append( '<div>' );
     var ds1 = new hz.doc.structure( 'span,_text_,input', [ 'a', 'b', 'c' ] );
     button = hz.ui.create.button(
-        'HTMLElement.setText()',
+        'textValue uniform accessor',
         function( event ) {
             console.log( 'span:   ' + ds1.get_node( 0 ).textValue );
             console.log( '_text_: ' + ds1.get_node( 1 ).textValue );
@@ -66,17 +53,17 @@ function main( argv ) {
             ds1.get_node( 2 ).textValue = 'f';
         }
     );
-    hz.util.append( p1, button );
-    hz.util.append( p1, ds1 );
+    p1.append( button );
+    p1.append( ds1.get_element() );
 
-    //testing HTMLElement.bindElements()
-    var p2 = hz.util.append();
+    //testing Element.bindElements()
+    var p2 = document.body.append( '<div>' );
     var ds2 = new hz.doc.structure( 'span,_text_,span', [ 'a', 'b', 'c' ] );
     ds2.get_node( 0 ).id = 'id_a';
     ds2.get_node( 1 ).id = 'id.b';
     ds2.get_node( 2 ).id = 'id-c';
     button = hz.ui.create.button(
-        'HTMLElement.bindElements()',
+        'Element.bindElements()',
         function( event ) {
             p2.bindElements();
             for( var prop in p2 ) {
@@ -86,7 +73,7 @@ function main( argv ) {
             }
         }
     );
-    hz.util.append( p2, button );
-    hz.util.append( p2, ds2 );
+    p2.append( button );
+    p2.append( ds2.get_element() );
 
 }
