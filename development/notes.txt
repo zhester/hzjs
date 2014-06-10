@@ -1,0 +1,96 @@
+HTML tags that may contain a URL/URI:
+
+a.href
+audio.src
+base.href
+form.action
+iframe.src
+img.src
+input[type="submit"].formaction
+link.href
+object.data
+script.src
+source.src
+video.src
+
+
+Idea for new doc structure generator:
+
+var s = 'div#root:div#body:h,p.sub,div#nav.invert.blue,p:span:"Hello World"'
+//old-ish interface (maybe keep it)
+//var ds = new structure( s );
+var elem = document.createElement( 'div' );
+elem.appendStructure( s );
+// --> use DOM to grab things, but non-colliding children with IDs get
+//     auto-assigned. e.g. elem.root:div#root, elem.body:div#body, etc
+//     string constanty-things are the only places where a textNode gets
+//       inserted (use "" to insert an empty textNode). can be either '' or ""
+//     be sure to collapse whitespace outside of string constants
+
+
+Idea for micro-version of JSON (uon?)
+
+  - no more quotation marks
+    - optional if escaping becomes a hassle
+    - escape token delimiters that are needed in strings
+  - numeric types are pattern matched
+    - ^(0x|X)?\d+$ (integer)
+    - ^\d+(e|E-?\d+)?$ (integer for +e, double for -e)
+    - ^(\d*)\.(\d*)(e|E-?\d+)?$ (double)
+  - keyword values become (JSON keyword values become strings)
+    - true  : _t
+    - false : _f
+    - null  : _n
+  - nesting delimiters are any of () or [] or {}
+    - no longer matters if it's an array or hash
+  - no "root" object needed to contain a hash
+  - root or nested type is determined by first occurrance of : or ,
+
+-- json --
+
+json = {"key":"value","k0":{"k00":"v00","k01":"v01"},"k1":[1,2,3],"k2":{"k2a":{"k2a0":"hello"}}}
+
+-- micro JSON --
+
+uon = key:value,k0:(k00:v00,k01:v01),k1:(1,2,3),k2(k2a:(k2a0:hello))
+
+-- stack syntax --
+
+ppon = key:value;k0:k00:v00;k01:v01;;k1:1,2,3;k2:k2a:k2a0:hello
+
+    --> collapses two characters for nested composites into one
+    --> collapses explicit "pops" at the end of the string
+    --> introduces one new token delimiter (;) to signal a "pop"
+
+    = key : value;
+      k0  :
+        k00 : v00;
+        k01 : v01;
+      ;
+      k1  : 1, 2, 3;
+      k2  :
+        k2a :
+          k2a0 : hello
+
+
+
+----> makes the input "auto-complete" based on the datalist options
+<input list="browsers">
+<datalist id="browsers">
+  <option value="Internet Explorer">
+  <option value="Firefox">
+  <option value="Chrome">
+  <option value="Opera">
+  <option value="Safari">
+</datalist>
+
+
+
+----> Rewriting .js and .css into a .php handler:
+RewriteEngine On
+RewriteRule (.+)\.(js|css|xsl)$ client.php?s=$1&e=$2 [L]
+RewriteRule (.+)\.(js|css|xsl)_d$ client.php?s=$1&e=$2&d=1 [L]
+
+----> <fieldset> can have a <legend> that acts as a box label
+
+----> build a time_ago() function in util
