@@ -1,0 +1,228 @@
+DTN: Document Tree Notation
+
+Document tree notation is a way of specifying a tree-shaped document structure
+using a single, terse string.  Compact formation of the structure is favored
+over readability and flexibility.
+
+The primary intent of this format is to avoid the large amount and complexity
+of DOM method calls that are necessary for building non-trivial HTML document
+fragments.  Once the fragment is constructed, however, the intent is to use
+DOM accessor methods.
+
+Besides compactness of strings, this technique has advantages over using HTML
+in a string and relying on .innerHTML since this system can preserve its
+element references for direct use (rather than having to traverse a
+possibly-unknown document tree).  This speeds up code where a feature needs
+repeated access to something primitive like an attribute or a .nodeValue.
+
+A Simple Example
+
+Assume an application needs the following structure to work:
+
+  <div>
+    <h1>Heading</h1>
+    <p>First paragraph</p>
+    <p>Second paragraph</p>
+  </div>
+
+Also assume that the textual contents of the three inner elements need to be
+regularly accessed for communicating with the user.
+
+The traditional DOM way to accomplish this might be:
+
+  var div, h1, p1, p2;
+  div = document.createElement( 'div' );
+  h1 = document.createElement( 'h1' );
+  h1.appendChild( document.createTextNode( 'Heading' );
+  div.appendChild( h1 );
+  p1 = document.createEleemnt( 'p' );
+  p1.appendChild( document.createTextNode( 'First paragraph' );
+  div.appendChild( p1 );
+  p2 = document.createEleemnt( 'p' );
+  p2.appendChild( document.createTextNode( 'Second paragraph' );
+  div.appendChild( p2 );
+
+Seeing as this code is transmitted over the network before being executed,
+I'm assuming that Claude Shannon is spinning in his grave right now.
+
+DTN attempts to reduce the DOM generation code to this:
+
+  var frag = build('div:h1:"Heading",p:"First paragraph",p:"Second paragraph"');
+
+Only the semantically relevant information needs to be specified for the
+application-specific document generation.  All the repetitious calls to the
+DOM host are kept in one place, and only need to be sent to the client once.
+
+There is one difference of note between the two methods:  The DOM methods
+give variables as the user desires them (but, the user also needs to create
+and deal with those variables).  The DTN generator provides a collection (the
+HTMLCollection interface is supported) of elements that can be accessed via
+DOM methods or through two other reference mechanisms.
+
+The first and simplest (although more difficult to maintain) access method is
+through a general-purpose .serialItem() method.  .serialItem() works like
+.item() or .namedItem(), but takes a serial index (as if the tree has been
+"flattened," A.K.A. serialized).  The massive downside is that the serialized
+index for a document fragment may shift around during runtime manipulation, or
+code that relies on serial positions incurs coupled maintenence with the DTN
+string.  This is really only useful if you want to avoid DOM access and don't
+feel like using the second access method.  It's nice if all your access code
+happens immediately after you generate the fragment.
+
+The second access method is intended to work in conjunction with the typical
+DOM usage pattern of assigning ID values to various nodes that the application
+finds important.  Instead of repeated abuse of the Element.getElementById()
+method, however, the element's reference is kept when it is created.
+
+The complexity of the DTN string is that tags can also specify their ID value:
+
+  var frag = build( 'div#root:h1:"Heading",p#mypara:"Paragraph"' );
+
+Now, if the specified ID doesn't conflict with a property in the host object
+(the object returned to the `frag` variable), it is automatically created in
+the collection object, and points to the DOM element that was generated:
+
+  document.body.appendChild( frag.root );
+  frag.mypara.firstChild.nodeValue = 'Hello!';
+
+This also means you can't go ID-ing things with "length" and "item."  Those
+IDs may be assigned in the DOM, but you won't see them in the host object.
+
+It also needs to be pointed out that a .namedItem() method call (which is
+functionally the same thing) may incur expensive lookups in the DOM host.
+Using the host object's property references, tree traversal is avoided
+entirely.
+
+In a daring example of abusing a common interface, generated text nodes can
+also have an ID for the best kind of high-speed data updates:
+
+  var frag = build( 'div:p:"Paragraph"#ptext' );
+  frag.ptext = 'Hello!';
+
+Notice that for text nodes, the .nodeValue property is automatically proxied
+by the host object's property.  If the text node's instance is needed, there
+are always the more common DOM accessors, and the .serialItem() method.  It
+might be worth pointing out that any incidental `id` property that might get
+assigned to the text node object probably won't work for DOM access since text
+nodes can't have attributes.
+
+Going back "up" the tree to append children to late-comer parents is done with
+a semi-colon:
+
+  var frag = build( 'div:h1,p,p;div:h2,p,p;div:h2,p,p' );
+
+Gives the same document fragment as the following HTML:
+
+  <div>
+    <h1></h1>
+    <p></p>
+    <p></p>
+  </div>
+  <div>
+    <h2></h2>
+    <p></p>
+    <p></p>
+  </div>
+  <div>
+    <h2></h2>
+    <p></p>
+    <p></p>
+  </div>
+
+Just to add some more convenience to the document specification, element class
+names can also be given with the same style of notation:
+
+var frag = build( 'div#root.sans.invert,h1.outline:"Heading"' );
+
+Which would yield the following equivalent in HTML:
+
+  <div id="root" class="sans invert">
+    <h1 class="outline">Heading</h1>
+  </div>
+
+Wait, you wanted an element multiplier?  I can't make everyone happy, but this
+works:
+
+  var frag = build( 'h1,p*4' );
+
+Produces:
+
+  <h1></h1>
+  <p></p>
+  <p></p>
+  <p></p>
+  <p></p>
+
+If you happen to give a repeated element an ID, you get something strange,
+though:
+
+  var frag = build( 'p#para*3' );
+
+HTML:
+
+  <p id="para_0"></p>
+  <p id="para_1"></p>
+  <p id="para_2"></p>
+
+The host object will now have a collection in that property:
+
+  frag.para.length == 3
+
+Other attributes can be given inline. However, now we're heading into areas
+where .innerHTML starts to win.  It's clear that this style of usage is not
+about extracting long-lived references to the elements, but replacing one
+form of markup with another (which is MegaBad(TM)).
+
+  var frag = build(
+    'p:"before ",a[href:"#clicky",foo:"bar"]:"clicky"," after"'
+  );
+
+HTML:
+
+  <p>before <a href="#clicky" foo="bar">clicky</a> after</p>
+
+Some additional "smarts":
+  - Simple input elements are given values instead of text nodes from text
+    - input[type="text|button"],textarea
+  - Attempting to attach children to a node that can't have children (e.g.
+    'img:p:"Oops!"') just won't work rather than creating a wonky fragment
+  - Strings work with either " or ' (choose one if you need the other in the
+    string literal)
+  - If you need a quotation mark of a containing character, use C-style
+    escaping:
+        var frag = build( 'p:"Hello \\"World\\""' );
+    Both quotation marks and the back-slash can be escaped.
+    Note: The interpretor will try to nuke your back-slashes, so you need to
+    escape them from getting caught in the interpretor.
+  - Whitespace outside of string literals is "trimmed," so you can make a
+    DTN string easier to read (or debug):
+       var frag = build(
+         'div: h1: "Heading", p.test : "Paragraph #", span : "1"#number'
+       );
+
+
+==============================================================================
+
+EBNF Definition (ZIH - NOT COMPLETE OR CORRECT)
+
+dtn       := node { ',' node } ;
+node      := element | textnode ;
+element   := name
+           ( '#' , id )?
+           ( '.' , key )*
+           ( '[' , pair { ',' , pair } , ']' )? ;
+pair      := key , ':' , text ;
+textnode  := text ( '#' id )? ;
+text      := '"' string '"' | "'" string "'" ;
+string    := schar* ;
+schar     := letter | digit ;
+character := letter | digit | symbol ;
+key       := '_' | letter , { letter | digit | '_' } ;
+letter    := 'a' .. 'z' | 'A' .. 'Z' ;
+digit     := '0' .. '9' ;
+symbol    := '`' | '~' | '!' | '@' | '#' | '$' | '%' | '^' | '&' | '*'
+           | '(' | ')' | '-' | '_' | '=' | '+' | '[' | ']' | '{' | '}'
+           | '\' | '|' | ';' | ':' | "'" | '"' | ',' | '.' | '<' | '>'
+           | '/' | '?' | ' ' ;
+space     := ( ' ' | \t | \n | \r )* ;
+
