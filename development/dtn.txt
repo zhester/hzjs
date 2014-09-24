@@ -1,5 +1,11 @@
 DTN: Document Tree Notation
 
+Update 2014-09-24:
+
+I'm currently re-focusing my document fragment construction to a system based
+more closely on JavaScript syntax.  The new system is called Document Tree
+Literals (DTL), and is captured in dtl.md.
+
 Document tree notation is a way of specifying a tree-shaped document structure
 using a single, terse string.  Compact formation of the structure is favored
 over readability and flexibility.
