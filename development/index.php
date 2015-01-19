@@ -1,22 +1,32 @@
 <?php
 
 $dh = opendir( '.' );
+$pages   = [];
 $scripts = [];
 if( $dh ) {
     while( ( $node = readdir( $dh ) ) !== false ) {
-        if( ( substr( $node, 0, 1 ) != '.' )
-         && ( substr( $node, -3 ) == '.js' ) ) {
-            $scripts[] = $node;
+        if( substr( $node, 0, 1 ) != '.' ) {
+            if( substr( $node, -3 ) == '.js' ) {
+                $scripts[] = $node;
+            }
+            else if( substr( $node, -5 ) == '.html' ) {
+                $pages[] = $node;
+            }
         }
     }
     closedir( $dh );
+    sort( $pages );
     sort( $scripts );
 }
 
-$link_tags = '';
+$links = [];
 for( $i = 0; $i < count( $scripts ); ++$i ) {
-    $link_tags .= '  <li><a href="?d=' . $scripts[ $i ]
-        . '">' . $scripts[ $i ] . '</a></li>' . "\n";
+    $links[] = '  <li><a href="?d=' . $scripts[ $i ]
+        . '">' . $scripts[ $i ] . '</a></li>';
+}
+for( $i = 0; $i < count( $pages ); ++$i ) {
+    $links[] = '  <li><a href="' . $pages[ $i ]
+        . '">' . $pages[ $i ] . '</a></li>';
 }
 
 $body = '';
@@ -25,7 +35,9 @@ if( empty( $_GET[ 'd' ] ) == false ) {
     $script_tags = '  <script src="' . $_GET[ 'd' ] . '"></script>' . "\n";
 }
 else {
-    $body = "<h1>hzjs Development</h1>\n<ul>\n" . $link_tags . "</ul>\n";
+    $body = "<h1>hzjs Development</h1>\n<ul>\n"
+        . implode( "\n", $links )
+        . "</ul>\n";
 }
 
 ?><!doctype html>
