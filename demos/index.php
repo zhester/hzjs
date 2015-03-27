@@ -115,3 +115,4 @@ function ec( $key ) { global $conf; echo $conf[ $key ]; }
 <?php echo $body; ?>
 </body>
 </html>
+

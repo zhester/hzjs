@@ -32,7 +32,13 @@ function main( argv ) {
                 'type' : 'select',
                 'args' : [ [ 'Beef', 'Pork', 'Insect' ] ]
             },
-            'File' : { 'type' : 'efile' }
+            'A Heading' : { 'type' : 'heading' },
+            'File' : { 'type' : 'efile' },
+            'Birthday' : { 'type' : 'date' },
+            'Options' : {
+                'type' : 'check',
+                'args' : [ [ 'One', 'Two', 'Three' ], null, 1, 0 ]
+            }
         },
         'Submit Label'
     );
