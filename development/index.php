@@ -32,7 +32,12 @@ for( $i = 0; $i < count( $pages ); ++$i ) {
 $body = '';
 $script_tags = '';
 if( empty( $_GET[ 'd' ] ) == false ) {
-    $script_tags = '  <script src="' . $_GET[ 'd' ] . '"></script>' . "\n";
+    $d     = $_GET[ 'd' ];
+    $check = __DIR__ . "/$d";
+    $valid = preg_match( '/^[a-z0-9_-]+\\.js$/', $d ) == 1;
+    if( $valid && file_exists( $check ) ) {
+        $script_tags = "  <script src=\"$d\"></script>\n";
+    }
 }
 else {
     $body = "<h1>hzjs Development</h1>\n<ul>\n"
